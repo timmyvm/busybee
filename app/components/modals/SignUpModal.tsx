@@ -12,6 +12,7 @@ import { signInUser } from "@/redux/slices/userSlice";
 
 export default function SignUpModal() {
   const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const isOpen = useSelector(
@@ -30,10 +31,18 @@ export default function SignUpModal() {
       console.log(userCredentials);
 
       await updateProfile(userCredentials.user, {
-        displayName: email.split('@')[0],
+        displayName: name || email.split('@')[0],
       });
 
-      dispatch(signInUser(userCredentials.user));
+      dispatch(signInUser(
+        {
+          name: userCredentials.user.displayName,
+          username: userCredentials.user.email!.split('@')[0],
+          uid: userCredentials.user.uid,
+          email: userCredentials.user.email,
+        }
+      ));
+
       dispatch(closeSignupModal());
     } catch (error) {
       console.error("Error signing up:", error);
@@ -43,7 +52,14 @@ export default function SignUpModal() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) return;
-      dispatch(signInUser(currentUser));
+      dispatch(signInUser(
+        {
+          username: currentUser.email!.split('@')[0],
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+        }
+      ));
     });
 
     return () => unsubscribe();
@@ -81,6 +97,8 @@ export default function SignUpModal() {
                   className="w-full h-[54px] border border-gray-200 
                 outline-none ps-3 rounded-[4px] focus:border-[#F4AF01] transition"
                   placeholder="Name"
+                  onChange={(event) => setName(event.target.value)}
+                  value={name}
                 />
 
                 <input

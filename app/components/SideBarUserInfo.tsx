@@ -34,8 +34,8 @@ export default function SideBarUserInfo() {
       />
 
       <div className="hidden xl:flex flex-col text-sm">
-        <span className="font-bold"></span>
-        <span className="text-gray-500">@</span>
+        <span className="font-bold">{user.name}</span>
+        <span className="text-gray-500">@{user.username}</span>
       </div>
 
       <div className="hidden xl:flex flex-col text-sm ms-2 max-w-[130px]">
